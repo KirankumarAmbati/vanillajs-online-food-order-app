@@ -1,0 +1,118 @@
+<html>
+	<head>
+		<title>Tomato</title>
+		<script type="text/javascript" src="./data.js"></script>
+		
+	</head>
+	<body>		
+		<script>
+			var cart = { };
+			
+			(function init() {
+				var header = document.createElement('header');
+				header.setAttribute('style', 'background-color: red');
+				
+				var title = document.createElement('h1');
+				title.setAttribute('style', 'margin-left: 2%;color:red;font-family: sans-serif;text-transform: uppercase;transform: skewX(-20deg);background-color: white; width: fit-content');
+				title.innerHTML = 'Tomato';
+				
+				header.appendChild(title);
+				
+				document.body.appendChild(header);
+				
+				data.map(item => {
+					cart[item.itemname] = 0;
+				})
+			})();
+			
+			function renderUI() {				
+				
+				if(document.getElementById('data') !== undefined && document.getElementById('data') !== null) {
+					document.getElementById('data').parentNode.removeChild(document.getElementById('data'));
+				}
+				
+				if(document.getElementById('cart') !== undefined && document.getElementById('cart') !== null) {
+					document.getElementById('cart').parentNode.removeChild(document.getElementById('cart'));
+				}
+				
+				var cartComponent = document.createElement('div');
+				
+				cartComponent.innerHTML = '<h1 style="color:red">CART</h1>';
+				cartComponent.setAttribute('id', 'cart');
+				cartComponent.setAttribute('style', 'margin: 2%; padding: 2%; background-color: lightgrey');
+				
+				var totalAmount = 0;
+				
+				Object.keys(cart).map((k, index) => {
+					if(cart[k] > 0) {
+						var pr = document.createElement('p');
+						pr.setAttribute('style', 'font-size:1.2rem;');
+						pr.innerHTML = k.toUpperCase() + '  x          ' + cart[k] + ' : $' + cart[k]*data[index].price;
+						cartComponent.appendChild(pr)
+						
+						totalAmount += cart[k]*data[index].price;
+					}
+				});
+				
+				var tot = document.createElement('h2');
+				tot.setAttribute('style', 'text-transform: uppercase');
+				tot.innerHTML = 'Total Amount: $' + totalAmount;
+				cartComponent.appendChild(tot)
+				
+				document.body.appendChild(cartComponent);
+				
+				var dataDiv = document.createElement('div');
+				dataDiv.setAttribute('id', 'data');
+				
+				dataDiv.setAttribute('style', 'display: flex; flex-wrap: wrap;justify-content: center');
+				data.map(ele => {
+					var itemContainer = document.createElement('div');
+					itemContainer.setAttribute('style', 'background-color: lightgray; padding:2%; margin: 2%; width: 15%')
+					
+					var title = document.createElement('h3');
+					title.innerHTML = ele.itemname;
+					title.setAttribute('style', 'color:red; text-transform: uppercase')
+					itemContainer.appendChild(title);
+					
+					var price = document.createElement('p');
+					price.innerHTML = 'Price: $' + ele.price;
+					itemContainer.appendChild(price);
+					
+					var totalPrice = document.createElement('p');
+					
+					totalPrice.innerHTML = 'Total to be payed: $' + (cart[ele.itemname] * ele.price);
+					itemContainer.appendChild(totalPrice);
+					
+					var quantity = document.createElement('select');
+					quantity.addEventListener('input', function(event) {
+						cart[ele.itemname] = parseInt(event.target.value);
+						renderUI();
+					});
+					var defaultOption = document.createElement('option');
+					defaultOption.value = 'select';
+						defaultOption.text = '-- select quantity --';
+						quantity.appendChild(defaultOption);
+					
+					for (var i = 1; i < 5; i++) {
+						var option = document.createElement('option');
+						option.value = i;
+						option.text = i;
+						if(cart[ele.itemname] === i) {							
+							option.selected = 'selected'
+						}
+						
+						quantity.appendChild(option);
+					}
+					
+					itemContainer.appendChild(quantity);
+					
+					dataDiv.appendChild(itemContainer);
+					document.body.appendChild(dataDiv);
+				})
+			}
+			
+			renderUI();
+			
+		</script>
+	</body>
+</html>
